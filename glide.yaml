@@ -1,0 +1,4 @@
+package: masa69/api
+import:
+- package: github.com/gin-gonic/gin
+  version: ^1.1.4
