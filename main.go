@@ -10,12 +10,20 @@ import (
 	// "net/http/httputil"
 )
 
-type GithubRepos struct {
+type GithubReposTemp struct {
 	Id          int    `json:"id"`
-	FullName    string `json:"name"`
+	Name        string `json:"name"`
 	Description string `json:"description"`
 	HtmlUrl     string `json:"html_url"`
 	UpdatedAt   string `json:"updated_at"`
+}
+
+type GithubRepos struct {
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	HtmlUrl     string `json:"htmlUrl"`
+	UpdatedAt   string `json:"updatedAt"`
 }
 
 func errorResponse(c *gin.Context, resultMessage string, statusCode int) {
@@ -66,7 +74,7 @@ func main() {
 
 		bytes := []byte(body)
 
-		var g []GithubRepos
+		var g []GithubReposTemp
 
 		jsonError := json.Unmarshal(bytes, &g)
 
@@ -76,10 +84,22 @@ func main() {
 			return
 		}
 
+		var res []GithubRepos
+
+		for _, list := range g {
+			res = append(res, GithubRepos{
+				list.Id,
+				list.Name,
+				list.Description,
+				list.HtmlUrl,
+				list.UpdatedAt,
+			})
+		}
+
 		c.JSON(200, gin.H{
 			"result":  "success",
 			"message": "success",
-			"body":    g,
+			"body":    res,
 		})
 	})
 
